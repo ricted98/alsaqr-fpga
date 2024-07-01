@@ -27,10 +27,14 @@ OPENOCD_CMDS  = -c "adapter speed $(ADAPTER_SPEED)" \
 			   	-c "set _TARGET $(TARGET); echo \"Target: $(TARGET)\"" \
 			   	-f "openocd.cfg"
 
+# Add init, reset, and halt commands
+OPENOCD_CMDS += -c "init" -c "reset halt"
+
 # Conditional programming of Hyperram interface
 ifeq ($(use-hyper),1)
 	OPENOCD_CMDS  += -c "mww 0x1a101018 0x18"
 endif
+
 
 # Conditional load of DTB file
 ifeq ($(load-dtb),1)
@@ -38,9 +42,6 @@ ifeq ($(load-dtb),1)
 	DTB_ADDR      ?= 0x81800000
 	OPENOCD_CMDS  += -c "load_image $(DTB_FILE) $(DTB_ADDR)"
 endif
-
-# Add init, reset, and halt commands
-OPENOCD_CMDS += -c "init" -c "reset halt"
 
 # Append OpenOCD commands to arguments
 OPENOCD_ARGS += $(OPENOCD_CMDS)
