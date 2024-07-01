@@ -7,8 +7,8 @@ BOARD         ?= vcu-118
 TARGET        ?= smp
 
 # Set NUM_CORES based on core configuration
-ifdef num_cores
-	NUM_CORES = $(num_cores)
+ifdef num-cores
+	NUM_CORES = $(num-cores)
 else
 	NUM_CORES = 2
 endif
