@@ -1,5 +1,5 @@
 # Define default variables
-OPENOCD       ?= openocd
+OPENOCD       ?= sudo $(shell which openocd)
 GDB           ?= riscv64-unknown-elf-gdb
 ADAPTER_SPEED ?= 1000
 INTERFACE     ?= olimex-arm-usb-ocd-h
