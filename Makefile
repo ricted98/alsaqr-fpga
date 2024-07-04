@@ -56,8 +56,11 @@ openocd:
 	$(OPENOCD) $(OPENOCD_ARGS) -c "echo \"Ready for Remote Connections\""
 
 # Run GDB to load the payload and execute it
-.PHONY: gdb
+.PHONY: gdb gdb-boot-linux
 gdb:
+	$(GDB) \
+	-ex "target extended-remote :3333"
+gdb-boot-linux:
 	$(GDB) \
 	-ex "file $(PAYLOAD)" \
 	-ex "target extended-remote :3333" \
