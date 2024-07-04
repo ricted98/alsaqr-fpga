@@ -60,7 +60,7 @@ openocd:
 gdb:
 	$(GDB) \
 	-ex "target extended-remote :3333"
-gdb-boot-linux:
+gdb-load-payload:
 	$(GDB) \
 	-ex "file $(PAYLOAD)" \
 	-ex "target extended-remote :3333" \
