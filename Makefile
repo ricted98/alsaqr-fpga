@@ -10,6 +10,8 @@ TARGET        ?= smp
 CVA6_SDK_DIR  ?= cva6-sdk
 IMAGES_DIR    ?= $(CVA6_SDK_DIR)/install64
 PAYLOAD       ?= $(IMAGES_DIR)/fw_payload.elf
+DTB_FILE      ?= $(CVA6_SDK_DIR)/alsaqr.dtb
+DTB_ADDR      ?= 0x81800000
 
 
 INITIAL_PC    ?= $(shell LC_ALL=C riscv64-unknown-elf-objdump -f $(PAYLOAD) | awk '/start address/ {print $NF}')
@@ -54,9 +56,8 @@ endif
 
 # Conditional load of DTB file
 ifeq ($(load-dtb),1)
-	DTB_FILE      ?= $(CVA6_SDK_DIR)/alsaqr.dtb
-	DTB_ADDR      ?= 0x81800000
 	OPENOCD_CMDS += -c "load_image $(DTB_FILE) $(DTB_ADDR)"
+	OPENOCD_DEPS += $(DTB_FILE)
 endif
 
 # Append OpenOCD commands to arguments
@@ -74,6 +75,16 @@ $(HYPERRAM_CFG_FILE):
 									--memory_base_addr          $(MEM_BASE_ADDR) \
 									--output_file               $@
 
+# CVA6 SDK targets
+$(CVA6_SDK_DIR):
+	git submodule update --init --recursive $@
+
+$(DTB_FILE): $(CVA6_SDK_DIR)
+	make -C $(CVA6_SDK_DIR) $@
+
+$(IMAGES_DIR)/fw_payload.elf: $(CVA6_SDK_DIR)
+	make -C $(CVA6_SDK_DIR) images
+
 # Run OpenOCD to set up a GDB server
 .PHONY: openocd
 openocd: $(OPENOCD_DEPS)
@@ -84,7 +95,7 @@ openocd: $(OPENOCD_DEPS)
 gdb:
 	$(GDB) \
 	-ex "target extended-remote :3333"
-gdb-load-payload:
+gdb-load-payload: $(PAYLOAD)
 	$(GDB) \
 	-ex "file $(PAYLOAD)" \
 	-ex "target extended-remote :3333" \
@@ -92,7 +103,11 @@ gdb-load-payload:
 	-ex "load" \
 	-ex "continue"
 
-.PHONY: clean
+.PHONY: clean deep-clean
 
 clean:
-	rm -f generated/*
+	make -C $(CVA6_SDK_DIR)/opensbi clean
+	rm -f generated/* $(DTB_FILE) $(IMAGES_DIR)/*
+
+deep-clean: clean
+	make -C $(CVA6_SDK_DIR)/buildroot clean
