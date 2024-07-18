@@ -11,7 +11,9 @@ CVA6_SDK_DIR  ?= cva6-sdk
 IMAGES_DIR    ?= $(CVA6_SDK_DIR)/install64
 PAYLOAD       ?= $(IMAGES_DIR)/fw_payload.elf
 
-INITIAL_PC    ?= 0x80000000
+START_ADDRESS_STRING = "indirizzo di partenza" # adapt it to the system locale
+
+INITIAL_PC    ?= $(shell riscv64-unknown-elf-objdump -f $(PAYLOAD) | grep $(START_ADDRESS_STRING) | awk '{print $$NF}')
 MEM_BASE_ADDR ?= 0x80000000
 
 # Hyperram config
