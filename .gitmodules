@@ -1,0 +1,3 @@
+[submodule "cva6-sdk"]
+	path = cva6-sdk
+	url = https://github.com/AlSaqr-platform/cva6-sdk.git
