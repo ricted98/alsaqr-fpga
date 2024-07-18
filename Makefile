@@ -80,8 +80,12 @@ $(HYPERRAM_CFG_FILE):
 									--output_file               $@
 
 # CVA6 SDK targets
+.PHONY: $(CVA6_SDK_DIR)
+
 $(CVA6_SDK_DIR):
-	git submodule update --init --recursive $@
+	if [ ! -d "$(CVA6_SDK_DIR)/.git" ] || [ -z "$(shell ls -A $(CVA6_SDK_DIR))" ]; then \
+		git submodule update --init --recursive $@; \
+	fi
 
 $(DTB_FILE): $(CVA6_SDK_DIR)
 	make -C $(CVA6_SDK_DIR) $@
