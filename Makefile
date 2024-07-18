@@ -28,11 +28,8 @@ HYPERRAM_CFG_FILE       ?= generated/hyperram_config.cfg
 
 OPENOCD_DEPS           :=
 
-# Set NUM_CORES based on core configuration
-NUM_CORES     ?= 2
-ifeq ($(origin num-cores), command line)
-    NUM_CORES = $(num-cores)
-endif
+# Set NUM_HARTS based on core configuration
+NUM_HARTS     ?= 2
 
 # OpenOCD directory
 OPENOCD_DIR   ?= openocd
@@ -44,7 +41,7 @@ OPENOCD_ARGS  = -s "$(OPENOCD_DIR)"
 OPENOCD_CMDS  = -c "adapter speed $(ADAPTER_SPEED)" \
                -c "set _INTERFACE $(INTERFACE); echo \"Interface: $(INTERFACE)\"" \
                -c "set _BOARD $(BOARD); echo \"Board: $(BOARD)\"" \
-               -c "set _NUM_CORES $(NUM_CORES); echo \"Number of cores: $(NUM_CORES)\"" \
+               -c "set _NUM_CORES $(NUM_HARTS); echo \"Number of cores: $(NUM_HARTS)\"" \
                -c "set _TARGET $(TARGET); echo \"Target: $(TARGET)\"" \
                -f "openocd.cfg" \
                -c "init" \
@@ -92,7 +89,7 @@ gdb-load-payload:
 	$(GDB) \
 	-ex "file $(PAYLOAD)" \
 	-ex "target extended-remote :3333" \
-	$(foreach i, $(shell seq 1 $(NUM_CORES)), -ex "thread $(i)" -ex "set \$$pc=$(INITIAL_PC)" -ex "info registers pc") \
+	$(foreach i, $(shell seq 1 $(NUM_HARTS)), -ex "thread $(i)" -ex "set \$$pc=$(INITIAL_PC)" -ex "info registers pc") \
 	-ex "load" \
 	-ex "continue"
 
