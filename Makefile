@@ -32,6 +32,9 @@ OPENOCD_DEPS           :=
 # Set NUM_HARTS based on core configuration
 NUM_HARTS     ?= 2
 
+# Set TARGET_FREQ
+TARGET_FREQ   ?= 50000000 # Hz
+
 # OpenOCD directory
 OPENOCD_DIR   ?= openocd
 
@@ -52,6 +55,7 @@ OPENOCD_CMDS  = -c "adapter speed $(ADAPTER_SPEED)" \
 ifeq ($(use-hyper),1)
 	OPENOCD_CMDS += -f $(HYPERRAM_CFG_FILE)
 	OPENOCD_DEPS += $(HYPERRAM_CFG_FILE)
+	USE_HYPER = 1
 endif
 
 # Conditional load of DTB file
