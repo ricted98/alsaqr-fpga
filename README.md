@@ -28,7 +28,7 @@ The Makefile uses several variables that can be customized:
 | PAYLOAD                      | $(IMAGES_DIR)/fw_payload.elf           |
 | DTB_FILE                     | $(CVA6_SDK_DIR)/alsaqr.dtb             |
 | DTB_ADDR                     | 0x81800000                             |
-| INITIAL_PC                   | $(shell LC_ALL=C riscv64-unknown-elf-objdump -f $(PAYLOAD) \| awk '/start address/ {print $NF}') |
+| INITIAL_PC                   | Entry point of $(PAYLOAD)              |
 | MEM_BASE_ADDR                | 0x80000000                             |
 | NUM_HARTS                    | 2                                      |
 | TARGET_FREQ                  | 50000000 (Hz)                          |
