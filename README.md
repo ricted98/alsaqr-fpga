@@ -49,6 +49,12 @@ The Makefile uses several variables that can be customized:
 
 ## Targets
 
+- **init**: Initialize all the needed dependencies.
+
+  ```sh
+  make init
+  ```
+
 - **openocd**: Runs OpenOCD with the specified configuration to set up a GDB server.
 
   ```sh

@@ -115,3 +115,6 @@ clean:
 
 deep-clean: clean
 	make -C $(CVA6_SDK_DIR)/buildroot clean
+
+.PHONY: init
+init: $(CVA6_SDK_DIR)
