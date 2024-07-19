@@ -29,11 +29,11 @@ HYPERRAM_CFG_FILE       ?= generated/hyperram_config.cfg
 
 OPENOCD_DEPS           :=
 
-# Set NUM_HARTS based on core configuration
+# Set NUM_HARTS and TARGET_FREQ
 NUM_HARTS     ?= 2
-
-# Set TARGET_FREQ
 TARGET_FREQ   ?= 50000000 # Hz
+
+export NUM_HARTS TARGET_FREQ
 
 # OpenOCD directory
 OPENOCD_DIR   ?= openocd
@@ -56,6 +56,7 @@ ifeq ($(use-hyper),1)
 	OPENOCD_CMDS += -f $(HYPERRAM_CFG_FILE)
 	OPENOCD_DEPS += $(HYPERRAM_CFG_FILE)
 	USE_HYPER = 1
+	export USE_HYPER
 endif
 
 # Conditional load of DTB file
