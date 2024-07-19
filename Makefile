@@ -88,7 +88,7 @@ $(CVA6_SDK_DIR):
 	fi
 
 $(DTB_FILE): $(CVA6_SDK_DIR)
-	make -C $(CVA6_SDK_DIR) $@
+	make -C $(CVA6_SDK_DIR) $(notdir $@)
 
 $(IMAGES_DIR)/fw_payload.elf: $(CVA6_SDK_DIR)
 	make -C $(CVA6_SDK_DIR) images
