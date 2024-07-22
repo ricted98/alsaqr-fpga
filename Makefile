@@ -114,6 +114,7 @@ gdb-load-payload: $(PAYLOAD)
 .PHONY: clean deep-clean
 
 clean:
+	make -C $(CVA6_SDK_DIR) clean
 	make -C $(CVA6_SDK_DIR)/opensbi clean
 	rm -f generated/* $(DTB_FILE) $(IMAGES_DIR)/*
 
