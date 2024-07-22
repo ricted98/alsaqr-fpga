@@ -13,8 +13,6 @@ PAYLOAD       ?= $(IMAGES_DIR)/fw_payload.elf
 DTB_FILE      ?= $(CVA6_SDK_DIR)/alsaqr.dtb
 DTB_ADDR      ?= 0x81800000
 
-
-INITIAL_PC    ?= $(shell LC_ALL=C riscv64-unknown-elf-objdump -f $(PAYLOAD) | awk '/start address/ {print $NF}')
 MEM_BASE_ADDR ?= 0x80000000
 
 # Hyperram config
@@ -105,6 +103,7 @@ gdb:
 	$(GDB) \
 	-ex "target extended-remote :3333"
 gdb-load-payload: $(PAYLOAD)
+	$(eval INITIAL_PC := $(shell LC_ALL=C riscv64-unknown-elf-objdump -f $(PAYLOAD) | awk '/start address/ {print $$NF}'))
 	$(GDB) \
 	-ex "file $(PAYLOAD)" \
 	-ex "target extended-remote :3333" \
