@@ -66,6 +66,7 @@ def main():
     cfg["phys_in_use"]      = args.hyperram_phys_in_use
     cfg["which_phy"]        = args.hyperram_which_phy
     cfg["t_latency_access"] = args.hyperram_t_latency_access
+    cfg["address_space"]    = args.hyperram_address_space
 
     instructions = []
 
