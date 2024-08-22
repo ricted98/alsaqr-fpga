@@ -50,10 +50,9 @@ OPENOCD_CMDS  = -c "adapter speed $(ADAPTER_SPEED)" \
                -c "reset halt"
 
 # Conditional programming of Hyperram interface
-ifeq ($(use-hyper),1)
+ifeq ($(USE_HYPER),1)
 	OPENOCD_CMDS += -f $(HYPERRAM_CFG_FILE)
 	OPENOCD_DEPS += $(HYPERRAM_CFG_FILE)
-	USE_HYPER = 1
 	export USE_HYPER
 endif
 
