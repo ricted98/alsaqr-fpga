@@ -25,7 +25,8 @@ HYPERRAM_PHYS_IN_USE    ?= 1
 HYPERRAM_CFG_BASE_ADDR  ?= 0x1a101000
 HYPERRAM_CFG_FILE       ?= generated/hyperram_config.cfg
 
-OPENOCD_DEPS           :=
+OPENOCD_DEPS :=
+GDB_DEPS     := $(PAYLOAD)
 
 # Set NUM_HARTS and TARGET_FREQ
 NUM_HARTS     ?= 2
@@ -57,9 +58,8 @@ ifeq ($(USE_HYPER),1)
 endif
 
 # Conditional load of DTB file
-ifeq ($(load-dtb),1)
-	OPENOCD_CMDS += -c "load_image $(DTB_FILE) $(DTB_ADDR)"
-	OPENOCD_DEPS += $(DTB_FILE)
+ifeq ($(PAYLOAD), $(IMAGES_DIR)/fw_payload.elf)
+	GDB_DEPS += $(DTB_FILE)
 endif
 
 # Append OpenOCD commands to arguments
@@ -101,11 +101,12 @@ openocd: $(OPENOCD_DEPS)
 gdb:
 	$(GDB) \
 	-ex "target extended-remote :3333"
-gdb-load-payload: $(PAYLOAD)
+gdb-load-payload: $(GDB_DEPS)
 	$(eval INITIAL_PC := $(shell LC_ALL=C riscv64-unknown-elf-objdump -f $(PAYLOAD) | awk '/start address/ {print $$NF}'))
-	$(GDB) \
-	-ex "file $(PAYLOAD)" \
+	$(GDB) $(PAYLOAD) \
 	-ex "target extended-remote :3333" \
+	$(if $(filter $(IMAGES_DIR)/fw_payload.elf,$(PAYLOAD)), \
+		-ex "monitor load_image $(DTB_FILE) $(DTB_ADDR)",) \
 	$(foreach i, $(shell seq 1 $(NUM_HARTS)), -ex "thread $(i)" -ex "set \$$pc=$(INITIAL_PC)" -ex "info registers pc") \
 	-ex "load" \
 	-ex "continue"
