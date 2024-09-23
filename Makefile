@@ -50,6 +50,13 @@ OPENOCD_CMDS  = -c "adapter speed $(ADAPTER_SPEED)" \
                -c "init" \
                -c "reset halt"
 
+# Use LLC in SPM mode (experimental)
+ifeq ($(LLC_SPM), 1)
+	OPENOCD_CMDS += -c "mww 0x10401000 0xffffffff"
+	OPENOCD_CMDS += -c "mww 0x10401004 0xffffffff"
+	OPENOCD_CMDS += -c "mww 0x10401010 0x1"
+endif
+
 # Conditional programming of Hyperram interface
 ifeq ($(USE_HYPER),1)
 	OPENOCD_CMDS += -f $(HYPERRAM_CFG_FILE)
