@@ -1,10 +1,13 @@
 # Define default variables
-OPENOCD       ?= sudo $(shell which openocd)
-GDB           ?= riscv64-unknown-elf-gdb
-ADAPTER_SPEED ?= 1000
-INTERFACE     ?= olimex-arm-usb-ocd-h
-BOARD         ?= vcu-118
-TARGET        ?= smp
+OPENOCD         ?= openocd
+OPENOCD_SCRIPTS ?= $(shell dirname $(shell which openocd))/../share/openocd/scripts
+GDB             ?= riscv64-unknown-elf-gdb
+ADAPTER_SPEED   ?= 1000
+INTERFACE       ?= ftdi
+DEVICE          ?= olimex-arm-usb-ocd-h
+TARGET          ?= smp
+
+export OPENOCD_SCRIPTS
 
 # CVA6 SDK variables
 CVA6_SDK_DIR  ?= cva6-sdk
@@ -43,7 +46,7 @@ OPENOCD_ARGS  = -s "$(OPENOCD_DIR)"
 # Initialize OpenOCD commands
 OPENOCD_CMDS  = -c "adapter speed $(ADAPTER_SPEED)" \
                -c "set _INTERFACE $(INTERFACE); echo \"Interface: $(INTERFACE)\"" \
-               -c "set _BOARD $(BOARD); echo \"Board: $(BOARD)\"" \
+               -c "set _DEVICE $(DEVICE); echo \"Device: $(DEVICE)\"" \
                -c "set _NUM_CORES $(NUM_HARTS); echo \"Number of cores: $(NUM_HARTS)\"" \
                -c "set _TARGET $(TARGET); echo \"Target: $(TARGET)\"" \
                -f "openocd.cfg" \
