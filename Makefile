@@ -1,10 +1,11 @@
 # Define default variables
 OPENOCD         ?= openocd
-OPENOCD_SCRIPTS ?= $(shell dirname $(shell which openocd))/../share/openocd/scripts
+OPENOCD_SCRIPTS ?= $(shell dirname $(shell which $(OPENOCD)))/../share/openocd/scripts
 GDB             ?= riscv64-unknown-elf-gdb
 ADAPTER_SPEED   ?= 1000
 INTERFACE       ?= ftdi
 DEVICE          ?= olimex-arm-usb-ocd-h
+ID              ?=
 TARGET          ?= smp
 
 export OPENOCD_SCRIPTS
@@ -44,14 +45,18 @@ OPENOCD_DIR   ?= openocd
 OPENOCD_ARGS  = -s "$(OPENOCD_DIR)"
 
 # Initialize OpenOCD commands
-OPENOCD_CMDS  = -c "adapter speed $(ADAPTER_SPEED)" \
-               -c "set _INTERFACE $(INTERFACE); echo \"Interface: $(INTERFACE)\"" \
-               -c "set _DEVICE $(DEVICE); echo \"Device: $(DEVICE)\"" \
-               -c "set _NUM_CORES $(NUM_HARTS); echo \"Number of cores: $(NUM_HARTS)\"" \
-               -c "set _TARGET $(TARGET); echo \"Target: $(TARGET)\"" \
-               -f "openocd.cfg" \
-               -c "init" \
-               -c "reset halt"
+OPENOCD_CMDS   = -c "adapter speed $(ADAPTER_SPEED)" \
+                 -c "set _INTERFACE $(INTERFACE); echo \"Interface: $(INTERFACE)\"" \
+                 -c "set _DEVICE $(DEVICE); echo \"Device: $(DEVICE)\""
+ifneq ($(ID), )
+	OPENOCD_CMDS +=  -c "set _ID $(ID); echo \"ID: $(ID)\""
+endif
+
+OPENOCD_CMDS  += -c "set _NUM_CORES $(NUM_HARTS); echo \"Number of cores: $(NUM_HARTS)\"" \
+                 -c "set _TARGET $(TARGET); echo \"Target: $(TARGET)\"" \
+                 -f "openocd.cfg" \
+                 -c "init" \
+                 -c "reset halt"
 
 # Use LLC in SPM mode (experimental)
 ifeq ($(LLC_SPM), 1)
