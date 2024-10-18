@@ -1,6 +1,6 @@
 # Define default variables
 OPENOCD         ?= openocd
-OPENOCD_SCRIPTS ?= $(shell dirname $(shell which $(OPENOCD)))/../share/openocd/scripts
+OPENOCD_SCRIPTS ?= $(abspath $(dir $(shell which $(OPENOCD)))/../share/openocd/scripts)
 GDB             ?= riscv64-unknown-elf-gdb
 ADAPTER_SPEED   ?= 1000
 INTERFACE       ?= ftdi
