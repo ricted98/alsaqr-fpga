@@ -10,6 +10,13 @@ TARGET          ?= smp
 
 export OPENOCD_SCRIPTS
 
+SCRIPTS_DIR   ?= scripts
+
+# Vivado variables
+VIVADO        ?= vivado_lab
+BITSTREAM     ?=
+HW_TARGET     ?=
+
 # CVA6 SDK variables
 CVA6_SDK_DIR  ?= cva6-sdk
 IMAGES_DIR    ?= $(CVA6_SDK_DIR)/install64
@@ -105,6 +112,10 @@ $(DTB_FILE): $(CVA6_SDK_DIR)
 
 $(IMAGES_DIR)/fw_payload.elf: $(CVA6_SDK_DIR)
 	make -C $(CVA6_SDK_DIR) images
+
+.PHONY: load_bistream
+load_bistream:
+	$(VIVADO) -mode batch -source $(SCRIPTS_DIR)/load_bistream.tcl -tclargs $(BITSTREAM) $(HW_TARGET)
 
 # Run OpenOCD to set up a GDB server
 .PHONY: openocd
