@@ -89,15 +89,16 @@ OPENOCD_ARGS += $(OPENOCD_CMDS)
 
 $(HYPERRAM_CFG_FILE):
 	mkdir -p $(dir $@)
-	python3 $(SCRIPTS_DIR)/hyperram_cfg.py	--hyperram_size             $(HYPERRAM_SIZE) \
-											--hyperram_t_latency_access $(HYPERRAM_LATENCY_ACCESS) \
-											--hypperam_no_of_chips      $(HYPPERAM_NO_OF_CHIPS) \
-											--hyperram_which_phy        $(HYPERRAM_WHICH_PHY) \
-											--hyperram_address_space    $(HYPERRAM_ADDRESS_SPACE) \
-											--hyperram_phys_in_use      $(HYPERRAM_PHYS_IN_USE) \
-											--hyperbus_cfg_base_addr    $(HYPERRAM_CFG_BASE_ADDR) \
-											--memory_base_addr          $(MEM_BASE_ADDR) \
-											--output_file               $@
+	python3 $(SCRIPTS_DIR)/hyperram_cfg.py \
+		--hyperram_size             $(HYPERRAM_SIZE) \
+		--hyperram_t_latency_access $(HYPERRAM_LATENCY_ACCESS) \
+		--hypperam_no_of_chips      $(HYPPERAM_NO_OF_CHIPS) \
+		--hyperram_which_phy        $(HYPERRAM_WHICH_PHY) \
+		--hyperram_address_space    $(HYPERRAM_ADDRESS_SPACE) \
+		--hyperram_phys_in_use      $(HYPERRAM_PHYS_IN_USE) \
+		--hyperbus_cfg_base_addr    $(HYPERRAM_CFG_BASE_ADDR) \
+		--memory_base_addr          $(MEM_BASE_ADDR) \
+		--output_file               $@
 
 # CVA6 SDK targets
 .PHONY: $(CVA6_SDK_DIR)
