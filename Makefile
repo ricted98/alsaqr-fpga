@@ -8,6 +8,11 @@ DEVICE          ?= olimex-arm-usb-ocd-h
 ID              ?=
 TARGET          ?= smp
 
+# OpenOCD ports
+GDB_PORT    ?= 3333
+TCL_PORT    ?= disabled
+TELNET_PORT ?= disabled
+
 export OPENOCD_SCRIPTS
 
 SCRIPTS_DIR   ?= scripts
@@ -53,14 +58,17 @@ OPENOCD_ARGS  = -s "$(OPENOCD_DIR)"
 
 # Initialize OpenOCD commands
 OPENOCD_CMDS   = -c "adapter speed $(ADAPTER_SPEED)" \
-                 -c "set _INTERFACE $(INTERFACE); echo \"Interface: $(INTERFACE)\"" \
-                 -c "set _DEVICE $(DEVICE); echo \"Device: $(DEVICE)\""
+                 -c "set _INTERFACE $(INTERFACE)" \
+                 -c "set _DEVICE $(DEVICE)" \
+				 -c "gdb_port $(GDB_PORT)" \
+				 -c "tcl_port $(TCL_PORT)" \
+				 -c "telnet_port $(TELNET_PORT)"
 ifneq ($(ID), )
-	OPENOCD_CMDS +=  -c "set _ID $(ID); echo \"ID: $(ID)\""
+	OPENOCD_CMDS +=  -c "adapter serial $(ID)"
 endif
 
-OPENOCD_CMDS  += -c "set _NUM_CORES $(NUM_HARTS); echo \"Number of cores: $(NUM_HARTS)\"" \
-                 -c "set _TARGET $(TARGET); echo \"Target: $(TARGET)\"" \
+OPENOCD_CMDS  += -c "set _NUM_CORES $(NUM_HARTS)" \
+                 -c "set _TARGET $(TARGET)" \
                  -f "openocd.cfg" \
                  -c "init" \
                  -c "reset halt"
@@ -121,17 +129,22 @@ load_bistream:
 # Run OpenOCD to set up a GDB server
 .PHONY: openocd
 openocd: $(OPENOCD_DEPS)
+	@echo "Interface      : $(INTERFACE)"
+	@echo "Device         : $(DEVICE)"
+	@echo "ID             : $(ID)"
+	@echo "Number of cores: $(NUM_HARTS)"
+	@echo "Target         : $(TARGET)"
 	$(OPENOCD) $(OPENOCD_ARGS) -c "echo \"Ready for Remote Connections\""
 
 # Run GDB to load the payload and execute it
 .PHONY: gdb gdb-load-payload
 gdb:
 	$(GDB) \
-	-ex "target extended-remote :3333"
+	-ex "target extended-remote :$(GDB_PORT)"
 gdb-load-payload: $(GDB_DEPS)
 	$(eval INITIAL_PC := $(shell LC_ALL=C riscv64-unknown-elf-objdump -f $(PAYLOAD) | awk '/start address/ {print $$NF}'))
 	$(GDB) $(PAYLOAD) \
-	-ex "target extended-remote :3333" \
+	-ex "target extended-remote :$(GDB_PORT)" \
 	$(if $(filter $(IMAGES_DIR)/fw_payload.elf,$(PAYLOAD)), \
 		-ex "monitor load_image $(DTB_FILE) $(DTB_ADDR)",) \
 	$(foreach i, $(shell seq 1 $(NUM_HARTS)), -ex "thread $(i)" -ex "set \$$pc=$(INITIAL_PC)" -ex "info registers pc") \
