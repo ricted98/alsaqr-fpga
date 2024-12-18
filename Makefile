@@ -142,12 +142,11 @@ gdb:
 	$(GDB) \
 	-ex "target extended-remote :$(GDB_PORT)"
 gdb-load-payload: $(GDB_DEPS)
-	$(eval INITIAL_PC := $(shell LC_ALL=C riscv64-unknown-elf-objdump -f $(PAYLOAD) | awk '/start address/ {print $$NF}'))
 	$(GDB) $(PAYLOAD) \
 	-ex "target extended-remote :$(GDB_PORT)" \
 	$(if $(filter $(IMAGES_DIR)/fw_payload.elf,$(PAYLOAD)), \
 		-ex "monitor load_image $(DTB_FILE) $(DTB_ADDR)",) \
-	$(foreach i, $(shell seq 1 $(NUM_HARTS)), -ex "thread $(i)" -ex "set \$$pc=$(INITIAL_PC)" -ex "info registers pc") \
+	$(foreach i, $(shell seq 1 $(NUM_HARTS)), -ex "thread $(i)" -ex "set \$$pc=_start" -ex "info registers pc") \
 	-ex "load" \
 	-ex "continue"
 
