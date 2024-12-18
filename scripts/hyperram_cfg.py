@@ -77,8 +77,8 @@ def main():
     no_of_ranges = args.hypperam_no_of_chips // 2
 
     for idx in range(no_of_ranges):
-        offset_start = 0x2C + idx * 8
-        offset_end   = 0x30 + idx * 8
+        offset_start = 4 * (len(cfg)    ) + idx * 8
+        offset_end   = 4 * (len(cfg) + 1) + idx * 8
         instructions += [
             f"mww 0x{args.hyperbus_cfg_base_addr + offset_start:X} 0x{args.memory_base_addr + memory_stride * idx:X}",
             f"mww 0x{args.hyperbus_cfg_base_addr + offset_end:X} 0x{args.memory_base_addr + memory_stride * (idx+1):X}",
