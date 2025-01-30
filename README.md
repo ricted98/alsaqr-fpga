@@ -11,6 +11,19 @@ This project is set up to build and deploy software on the Al Saqr platform by u
 - `riscv64-unknown-elf-gdb`: GDB for RISC-V.
 - `python3`: Required for running the HyperRAM configuration script.
 
+### OpenOCD Installation
+The provided scripts have been tested with OpenOCD  version ```0.12.0-g9ea7f3d64```.
+It can be installed using the following commands:
+```
+git clone https://github.com/riscv/riscv-openocd.git
+cd riscv-openocd
+git checkout 9ea7f3d64
+./bootstrap
+./configure --enable-jtag_vpi --enable-jtag_dpi --enable-remote-bitbang --enable-ftdi --enable-ftdi-oscan1 --prefix=/path/to/install
+make
+make install
+```
+
 ## Variables
 
 The Makefile uses several variables that can be customized:
